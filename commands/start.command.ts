@@ -40,21 +40,21 @@ export class StartCommand extends Command {
 
             try {
                 const response = await axios.request(options);
-
-                if (response.data && Array.isArray(response.data.messages) && response.data.messages.length > 0) {
-                    const reply = response.data.messages.pop()?.content;
-                    if (reply) {
-                        ctx.reply(reply);
-                    } else {
-                        ctx.reply("Sorry, the AI's response was empty.");
-                    }
+                if (response.data && response.data.LLAMA) {
+                    const reply = response.data.LLAMA;
+                    ctx.reply(reply);
                 } else {
+                    console.log('API response:', response.data);
                     ctx.reply("Sorry, I couldn't generate a response.");
                 }
             } catch (error) {
-                console.error(error);
+                if (axios.isAxiosError(error)) {
+                    console.error('Error details:', error.response?.data);
+                } else {
+                    console.error('Error:', error);
+                }
                 ctx.reply("Sorry, an error occurred while generating a response.");
-            }
+            }                     
         });
     }
 }
